@@ -1,3 +1,9 @@
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+
 .heading-container{
     display: flex;
     flex-direction: column;
