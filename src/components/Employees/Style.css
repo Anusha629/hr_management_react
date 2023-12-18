@@ -1,0 +1,96 @@
+
+.list-of-employees{
+text-align:left;
+padding-left:80px;
+margin-top:30px;
+
+}
+.parent{
+width:90%;
+margin-inline:auto;
+display:table;
+margin-top:30px;
+}
+
+.list-of-employees{
+text-align:left;
+padding-left:80px;
+margin-top:30px;
+
+}
+.parent{
+width:90%;
+margin-inline:auto;
+display:table;
+margin-top:30px;
+}
+
+.employee-list-container:-webkit-scrollbar{
+display: none;
+}
+
+.main-container{
+background-image: linear-gradient(-20deg, #78bcff87, white 55% 45%); 
+width:100%;
+
+}
+.employees-list-details-container{
+display: flex;
+width:85%;
+margin-inline: auto;
+padding-top: 50px;
+height: 90vh;
+
+}
+.employee-list-container{
+flex: .4;
+text-align: start;
+height: 85vh;
+overflow: scroll;
+-ms-overflow-style: none;  
+scrollbar-width: none;
+}
+
+.employee-list-container p:hover{
+cursor:pointer;
+color: #063a6e;
+}
+
+.employee-list-container p:focus{
+cursor:pointer;
+color: #063a6e;
+}
+
+.employee-list-container h3{
+margin-bottom:22px ;
+}
+
+.employee-details-container{
+flex: .5;
+display: flex;
+align-items: center;
+}
+
+.employee-details p{
+margin:0;
+}
+
+.employees-details-sub-container{
+padding:20px 40px;
+background-color: transparent;
+width: 80%;
+background-image: linear-gradient(-10deg, #aacef349, white 55% 45%); 
+}
+
+.employees-details-sub-container h4{
+width: 100%;
+text-align: start;
+font-size: 30px;
+margin-bottom:18px ;
+}
+
+.employees-details-sub-container table{
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
