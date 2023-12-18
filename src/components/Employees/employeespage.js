@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../index.css";
+import "./Style.css";
 
 export default function Employees() {
   const [employees, setEmployees] = useState([]);
@@ -67,45 +67,48 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
   };
 
   async function onhandleSubmit() {
-    const formData = new FormData();
-    formData.append("leave_date", leaveDetails.leave_date);
-    formData.append("leave_reason", leaveDetails.leave_reason);
-    console.log(leaveDetails);
+  const formData = new FormData();
+  formData.append("leave_date", leaveDetails.leave_date);
+  formData.append("leave_reason", leaveDetails.leave_reason);
+  console.log(leaveDetails);
 
-    try {
-      const response = await fetch(
-        `http://localhost:5000/leaves/${data.id}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      console.log("Server response:", response);
-
-      if (response.status === 200) {
-        const jsonData = await response.json();
-        console.log(jsonData.message);
-
-        setLeaveDetails({
-          leave_date: "",
-          leave_reason: "",
-        });
-
-        await fetchUserData(data.id);
-      } else {
-        console.log("Something went wrong");
+  try {
+    const response = await fetch(
+      `http://localhost:5000/leaves/${data.id}`,
+      {
+        method: "POST",
+        body: formData,
       }
-    } catch (e) {
-      console.log(e);
+    );
+    console.log("Server response:", response);
+
+    if (response.status === 200) {
+      const jsonData = await response.json();
+      console.log(jsonData.message);
+
+      setLeaveDetails({
+        leave_date: "", leave_reason: "",
+      });
+
+      await fetchUserData(data.id);
+
+      alert("Leave submitted successfully!");
+    } else {
+      console.log("Something went wrong");
+      alert(" Please try again.");
     }
+  } catch (e) {
+    console.log(e);
+    alert("An error occurred.");
   }
+}  
 
   return (
     <div className="employees-details-sub-container">
       <h4 className="employee-name">
         {data.fname} {data.lname}
       </h4>
-      <div className="employee-details">
+      <div className="">
       <div className="employee-details">
         <div className="details-key">
           <p> First Name</p>
