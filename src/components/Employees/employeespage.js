@@ -1,6 +1,5 @@
 import './Style.css';
 
-
 import React, { useState, useEffect } from 'react';
 export default function Employees() {
     const [employees, setEmployees] = useState([]);
@@ -17,7 +16,10 @@ export default function Employees() {
         <>
             <h3 className="list-of-employees">List of Employees</h3>
             <div className="parent">
-                {employees.map(data => <p>{data.fname} { data.lname}</p>)}
+            {employees.map((data, index) => (
+                <p key={index}>{index + 1}. {data.fname} {data.lname}</p>))}
             </div>
-            </>    )
+        </>
+    )
 }
+
