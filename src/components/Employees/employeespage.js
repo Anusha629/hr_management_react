@@ -3,112 +3,106 @@ import "./Style.css";
 
 export default function Employees() {
   const [employees, setEmployees] = useState([]);
+  const [searchResult,setSearchResult]=useState([])
   const [employeeDetails, setEmployeeDetails] = useState({});
 
   const fetchUserData = async (empId) => {
     const response = await fetch(`http://localhost:5000/employees/${empId}`);
     const jsonData = await response.json();
     console.log(jsonData);
-    console.log("function called");
 
-    setEmployeeDetails(jsonData);
+    setEmployeeDetails(() => jsonData);
   };
-
   const fetchData = async () => {
     const response = await fetch("http://localhost:5000/employees");
     const jsonData = await response.json();
 
-    setEmployees(jsonData);
-    console.log(jsonData);
+    setEmployees(() => jsonData);
+    console.log(employees);
   };
-
   useEffect(() => {
-    fetchData();
-  }, []);
-
+    fetchData(); }, []);
   return (
     <div className="main-container">
-      <div className="employees-list-details-container">
-        <div className="employee-list-container ">
+    <div className="employees-list-details-container">
+      <div className="employee-list-container ">
           <h3 className="">List of Employees</h3>
-          {employees.map((data, index) => (
-            <p
-              role="button"
-              onClick={() => {
-                fetchUserData(data.id);
-              }}
-              key={index}
-            >
-              {index + 1}. {data.fname + " " + data.lname}{" "}
-            </p>
-          ))}
-        </div>
-        <div className="employee-details-container ">
-          {Object.keys(employeeDetails).length > 0 && (
-            <EmployeeDetails
-              data={employeeDetails}
-              fetchUserData={fetchUserData}
-            />
-          )}
-        </div>
+          <SearchEmployee handleSearch={handleSearch} />
+          {
+            searchResult.length > 0 ? searchResult.map((data, index) => (
+              <p role="button" onClick={() => {fetchUserData(data.id);}} key={index}>
+                {index + 1}. {data.fname + " " + data.lname}{" "}
+              </p>
+            )) : employees.map((data, index) => (
+              <p role="button" onClick={() => {fetchUserData(data.id); }} key={index} >
+                {index + 1}. {data.fname + " " + data.lname}{" "}
+              </p>
+            ))
+          }
+      
       </div>
-    </div>
+      <div className="employee-details-container ">
+        {Object.keys(employeeDetails).length > 0 && (
+          <EmployeeDetails
+            data={employeeDetails}
+            fetchUserData={fetchUserData} />
+        )}
+      </div>
+      </div>
+      </div>
   );
+  function handleSearch(searchText) {
+    const filteredData = employees.filter((data) => (data.fname + " " + data.lname).toLowerCase().includes(searchText.toLowerCase()))
+    setSearchResult(filteredData)
+    console.log(searchResult) 
+}
 }
 
 const EmployeeDetails = ({ data, fetchUserData }) => {
   const [leaveDetails, setLeaveDetails] = useState({});
-
-  const handleLeaveDetailsChange = (e) => {
-    setLeaveDetails((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  async function onhandleSubmit() {
   const formData = new FormData();
-  formData.append("leave_date", leaveDetails.leave_date);
-  formData.append("leave_reason", leaveDetails.leave_reason);
-  console.log(leaveDetails);
+ 
+  async function onhandleSubmit() {
+    formData.append("leave_date", leaveDetails.leave_date);
+    formData.append("leave_reason", leaveDetails.leave_reason);
+    console.log(leaveDetails);
 
-  try {
-    const response = await fetch(
-      `http://localhost:5000/leaves/${data.id}`,
-      {
+    if (!leaveDetails.leave_reason || !leaveDetails.leave_date) {
+      alert('Please fill all fields')
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:5000/leaves/${data.id}`, {
         method: "POST",
         body: formData,
-      }
-    );
-    console.log("Server response:", response);
-
-    if (response.status === 200) {
-      const jsonData = await response.json();
-      console.log(jsonData.message);
-
-      setLeaveDetails({
-        leave_date: "", leave_reason: "",
       });
+        console.log("Server response:", response);
+        
+      console.log(leaveDetails)
+      if (response.status === 200) {
+        const jsonData = await response.json();
+        alert(jsonData.message);
+     
+        setLeaveDetails({
+          leave_date: "", leave_reason: "",
+        });
+       
+        await fetchUserData(data.id);
+      }
+      else {
+        alert("Something went wrong");
+      }
 
-      await fetchUserData(data.id);
-
-      alert("Leave submitted successfully!");
-    } else {
-      console.log("Something went wrong");
-      alert(" Please try again.");
     }
-  } catch (e) {
-    console.log(e);
-    alert("An error occurred.");
+    catch (e) {
+      console.log(e);
+    }
   }
-}  
-
   return (
     <div className="employees-details-sub-container">
       <h4 className="employee-name">
         {data.fname} {data.lname}
       </h4>
-      <div className="">
       <div className="employee-details">
         <div className="details-key">
           <p> First Name</p>
@@ -129,7 +123,6 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
           <p>{data.remaining_leaves} </p>
         </div>
       </div>
-      </div>
       <div className="add-leave-container">
         <h4>Add Leave Details</h4>
         <form id="leaveForm" className="input-form">
@@ -141,24 +134,23 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
               id="leave_date"
               name="leave_date"
               onChange={(e) => {
-                handleLeaveDetailsChange(e);
-              }}
-            />
+                setLeaveDetails((preve) => ({ ...preve, [e.target.name]: e.target.value, }));
+              }} />
             <br />
             <br />
           </div>
 
           <div className="input-field">
             <label htmlFor="leave_reason">Leave Reason</label>
+
             <input
               value={leaveDetails.leave_reason}
               type="text"
               id="leave_reason"
               name="leave_reason"
               onChange={(e) => {
-                handleLeaveDetailsChange(e);
-              }}
-            />
+                setLeaveDetails((preve) => ({ ...preve, [e.target.name]: e.target.value, }));
+              }} />
             <br />
             <br />
           </div>
@@ -169,4 +161,16 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       </div>
     </div>
   );
+
 };
+function SearchEmployee({ handleSearch }) {
+ 
+  return (
+    <div className="search-container">
+      <input type="search" placeholder="Search Employees" onChange={(e)=> handleSearch(e.target.value)} />
+      <svg width="25px"   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z" fill="#0d2e4e8a"></path></svg>
+      
+  </div>
+  ) 
+};
+
