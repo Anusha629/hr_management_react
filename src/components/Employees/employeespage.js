@@ -11,15 +11,15 @@ export default function Employees() {
     console.log(jsonData);
     console.log("function called");
 
-      setEmployeeDetails(() => jsonData);
+    setEmployeeDetails(jsonData);
   };
 
   const fetchData = async () => {
     const response = await fetch("http://localhost:5000/employees");
     const jsonData = await response.json();
 
-    setEmployees(() => jsonData);
-    console.log(employees);
+    setEmployees(jsonData);
+    console.log(jsonData);
   };
 
   useEffect(() => {
@@ -57,19 +57,7 @@ export default function Employees() {
 }
 
 const EmployeeDetails = ({ data, fetchUserData }) => {
-  const [leaveDetails, setLeaveDetails] = useState({
-  });
-  const [submitted, setSubmitted] = useState(false);
-  const formData = new FormData();
-
-  useEffect(() => {
-    if (submitted) {
-      setLeaveDetails({
-        leave_date: "",
-        leave_reason: "",
-      });
-    }
-  }, [submitted]);
+  const [leaveDetails, setLeaveDetails] = useState({});
 
   const handleLeaveDetailsChange = (e) => {
     setLeaveDetails((prev) => ({
@@ -79,6 +67,7 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
   };
 
   async function onhandleSubmit() {
+    const formData = new FormData();
     formData.append("leave_date", leaveDetails.leave_date);
     formData.append("leave_reason", leaveDetails.leave_reason);
     console.log(leaveDetails);
@@ -91,15 +80,20 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
           body: formData,
         }
       );
+      console.log("Server response:", response);
 
-      console.log(leaveDetails);
       if (response.status === 200) {
         const jsonData = await response.json();
         console.log(jsonData.message);
 
-        setSubmitted(true);
+        setLeaveDetails({
+          leave_date: "",
+          leave_reason: "",
+        });
+
         await fetchUserData(data.id);
       } else {
+        console.log("Something went wrong");
       }
     } catch (e) {
       console.log(e);
@@ -111,6 +105,7 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       <h4 className="employee-name">
         {data.fname} {data.lname}
       </h4>
+      <div className="employee-details">
       <div className="employee-details">
         <div className="details-key">
           <p> First Name</p>
@@ -130,6 +125,7 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
           <p> {data.max_leaves}</p>
           <p>{data.remaining_leaves} </p>
         </div>
+      </div>
       </div>
       <div className="add-leave-container">
         <h4>Add Leave Details</h4>
@@ -171,5 +167,3 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
     </div>
   );
 };
-
-
