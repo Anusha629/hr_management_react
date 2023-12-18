@@ -176,3 +176,23 @@ cursor:pointer;
 background-color: #466f97;
 }
 
+.search-container{
+width:max-content;
+display:flex;
+position:relative;
+margin-bottom:18px;
+}
+
+.search-container input{
+outline:none;
+border:1px solid #0d2e4e50;
+padding: 2px 5px 2px 15px !important;
+border-radius: 12px;
+}
+
+.search-container svg{
+position:absolute;
+right:5px;
+top:50%;
+transform:translate(0,-50%);
+}
