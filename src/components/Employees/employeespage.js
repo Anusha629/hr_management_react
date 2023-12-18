@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './Style.css'
+import "../../index.css";
 
 export default function Employees() {
   const [employees, setEmployees] = useState([]);
@@ -8,51 +8,103 @@ export default function Employees() {
   const fetchUserData = async (empId) => {
     const response = await fetch(`http://localhost:5000/employees/${empId}`);
     const jsonData = await response.json();
-    setEmployeeDetails(jsonData);
+    console.log(jsonData);
+    console.log("function called");
+
+      setEmployeeDetails(() => jsonData);
   };
 
   const fetchData = async () => {
     const response = await fetch("http://localhost:5000/employees");
     const jsonData = await response.json();
-    setEmployees(jsonData);
+
+    setEmployees(() => jsonData);
+    console.log(employees);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const handleSubmit = async () => {};
-
   return (
     <div className="main-container">
       <div className="employees-list-details-container">
-        <div className="employee-list-container">
+        <div className="employee-list-container ">
           <h3 className="">List of Employees</h3>
           {employees.map((data, index) => (
-            <p role="button" onClick={() => {fetchUserData(data.id); }} key={index} >
-              {index + 1}. {data.fname} {data.lname}{" "}
+            <p
+              role="button"
+              onClick={() => {
+                fetchUserData(data.id);
+              }}
+              key={index}
+            >
+              {index + 1}. {data.fname + " " + data.lname}{" "}
             </p>
           ))}
         </div>
-        <div className="employee-details-container">
+        <div className="employee-details-container ">
           {Object.keys(employeeDetails).length > 0 && (
-            <EmployeeDetails data={employeeDetails} handleSubmit={handleSubmit} />)}
+            <EmployeeDetails
+              data={employeeDetails}
+              fetchUserData={fetchUserData}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-const EmployeeDetails = ({ data, handleSubmit }) => {
-  const [leaveDetails, setLeaveDetails] = useState({ leave_date: '', leave_reason: '' });
+const EmployeeDetails = ({ data, fetchUserData }) => {
+  const [leaveDetails, setLeaveDetails] = useState({
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const formData = new FormData();
+
+  useEffect(() => {
+    if (submitted) {
+      setLeaveDetails({
+        leave_date: "",
+        leave_reason: "",
+      });
+    }
+  }, [submitted]);
 
   const handleLeaveDetailsChange = (e) => {
-    setLeaveDetails((prev) => ({ ...prev,
+    setLeaveDetails((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const onhandleSubmit = async () => { handleSubmit(); };
+  async function onhandleSubmit() {
+    formData.append("leave_date", leaveDetails.leave_date);
+    formData.append("leave_reason", leaveDetails.leave_reason);
+    console.log(leaveDetails);
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/leaves/${data.id}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      console.log(leaveDetails);
+      if (response.status === 200) {
+        const jsonData = await response.json();
+        console.log(jsonData.message);
+
+        setSubmitted(true);
+        await fetchUserData(data.id);
+      } else {
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <div className="employees-details-sub-container">
@@ -84,14 +136,30 @@ const EmployeeDetails = ({ data, handleSubmit }) => {
         <form id="leaveForm" className="input-form">
           <div className="input-label">
             <label htmlFor="leave_date">Leave Date</label>
-            <input value={leaveDetails.leave_date} type="date" id="leave_date" name="leave_date" onChange={(e) => { handleLeaveDetailsChange(e); }}/>
+            <input
+              value={leaveDetails.leave_date}
+              type="date"
+              id="leave_date"
+              name="leave_date"
+              onChange={(e) => {
+                handleLeaveDetailsChange(e);
+              }}
+            />
             <br />
             <br />
           </div>
 
           <div className="input-field">
             <label htmlFor="leave_reason">Leave Reason</label>
-            <input value={leaveDetails.leave_reason} type="text" id="leave_reason" name="leave_reason" onChange={(e) => {handleLeaveDetailsChange(e); }}/>
+            <input
+              value={leaveDetails.leave_reason}
+              type="text"
+              id="leave_reason"
+              name="leave_reason"
+              onChange={(e) => {
+                handleLeaveDetailsChange(e);
+              }}
+            />
             <br />
             <br />
           </div>
@@ -103,4 +171,5 @@ const EmployeeDetails = ({ data, handleSubmit }) => {
     </div>
   );
 };
+
 
