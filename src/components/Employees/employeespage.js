@@ -25,7 +25,7 @@ export default function Employees() {
   return (
     <div className="main-container">
     <div className="employees-list-details-container">
-      <div className="employee-list-container ">
+      <div className="employee-list-container">
           <h3 className="">List of Employees</h3>
           <SearchEmployee handleSearch={handleSearch} />
           {
@@ -78,6 +78,7 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       }, 2500);
       return;
     }
+  
     try {
       const response = await fetch(`http://localhost:5000/leaves/${data.id}`, {
         method: "POST",
@@ -89,7 +90,7 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       if (response.status === 200) {
         const jsonData = await response.json();
         setSuccessMessage(jsonData.message);
-
+        console.log(jsonData);
         setTimeout(() => {
          setSuccessMessage();
          }, 2500);
@@ -197,6 +198,14 @@ function SearchEmployee({ handleSearch }) {
   </div>
   ) 
 };
+
+
+
+
+
+
+
+
 
 
 
