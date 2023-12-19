@@ -60,6 +60,10 @@ export default function Employees() {
 
 const EmployeeDetails = ({ data, fetchUserData }) => {
   const [leaveDetails, setLeaveDetails] = useState({});
+
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  
   const formData = new FormData();
  
   async function onhandleSubmit() {
@@ -68,7 +72,10 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
     console.log(leaveDetails);
 
     if (!leaveDetails.leave_reason || !leaveDetails.leave_date) {
-      alert('Please fill all fields')
+      setErrorMessage('Please fill all fields')
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 2500);
       return;
     }
     try {
@@ -81,8 +88,8 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       console.log(leaveDetails)
       if (response.status === 200) {
         const jsonData = await response.json();
-        alert(jsonData.message);
-     
+        setSuccessMessage(jsonData.message);
+        
         setLeaveDetails({
           leave_date: "", leave_reason: "",
         });
@@ -90,9 +97,9 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
         await fetchUserData(data.id);
       }
       else {
-        alert("Something went wrong");
+        setErrorMessage("Leave entry already exists for this date.");
+        
       }
-
     }
     catch (e) {
       console.log(e);
@@ -134,6 +141,7 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
               id="leave_date"
               name="leave_date"
               onChange={(e) => {
+                setErrorMessage('');
                 setLeaveDetails((preve) => ({ ...preve, [e.target.name]: e.target.value, }));
               }} />
             <br />
@@ -149,10 +157,17 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
               id="leave_reason"
               name="leave_reason"
               onChange={(e) => {
+                setErrorMessage('');
                 setLeaveDetails((preve) => ({ ...preve, [e.target.name]: e.target.value, }));
               }} />
             <br />
             <br />
+
+            <div className="message-container">
+                {successMessage && <p className="success-message">{successMessage}</p>}
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+            </div>
+            
           </div>
         </form>
         <button className="leave-submit-btn" onClick={onhandleSubmit}>
@@ -161,16 +176,24 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       </div>
     </div>
   );
-
 };
+
 function SearchEmployee({ handleSearch }) {
  
   return (
     <div className="search-container">
       <input type="search" placeholder="Search Employees" onChange={(e)=> handleSearch(e.target.value)} />
-      <svg width="25px"   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z" fill="#0d2e4e8a"></path></svg>
+          <svg width="25px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 
+      18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247
+      15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748
+       16.0247L16.0247 15.8748Z" fill="#0d2e4e8a"></path></svg>
       
   </div>
   ) 
 };
+
+
+
+
+
 
