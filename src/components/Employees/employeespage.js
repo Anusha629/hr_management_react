@@ -89,7 +89,11 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       if (response.status === 200) {
         const jsonData = await response.json();
         setSuccessMessage(jsonData.message);
-        
+
+        setTimeout(() => {
+         setSuccessMessage();
+         }, 2500);
+  
         setLeaveDetails({
           leave_date: "", leave_reason: "",
         });
@@ -98,7 +102,9 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       }
       else {
         setErrorMessage("Leave entry already exists for this date.");
-        
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 2500);
       }
     }
     catch (e) {
@@ -191,9 +197,6 @@ function SearchEmployee({ handleSearch }) {
   </div>
   ) 
 };
-
-
-
 
 
 
