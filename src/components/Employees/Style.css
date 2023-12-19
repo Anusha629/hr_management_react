@@ -195,4 +195,22 @@ position:absolute;
 right:5px;
 top:50%;
 transform:translate(0,-50%);
+} 
+
+.message-container {
+position: fixed; 
+top: 200px; 
+left: 50%;
+border: 1px solid #ccc; 
+border:none;
+background-image: linear-gradient(-20deg, white 55% 45%, #78bcff87); 
+border-radius:5px;
 }
+
+.success-message,.error-message {
+  color: rgb(66, 63, 63);
+  font-weight: 18px;
+}
+
+
+
