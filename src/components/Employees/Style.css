@@ -109,16 +109,16 @@ gap: 5px;
 
 .input-label{
 display: flex;
-align-items: start;
-justify-content: start;
+align-items: flex-start;
+justify-content: flex-start;
 margin-bottom: 10px;
 }
 
 .input-field{
 display: flex;
 margin-bottom: 15px;
-align-items: start;
-justify-content: start;
+align-items: flex-start;
+justify-content: flex-start;
 }
 
 .add-leave-container label{
@@ -152,7 +152,7 @@ font-weight:normal;
 .details-key,.details-value{
 display:flex;
 flex-direction: column;
-align-items: start;
+align-items: flex-start;
 gap: 10px;
 }
 
