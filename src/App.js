@@ -6,7 +6,7 @@ import Employees from './components/Employees/employeespage.js';
 import About from './components/About/aboutpage.js';
 
 import { Route, Routes} from 'react-router-dom';
-
+import ErrorPage from './components/Error/errorpage';
 
 function App() {
   return (
@@ -17,6 +17,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/employees" element={<Employees />} /> 
         <Route path="/about" element={<About />} />
+        <Route path="*" element={<ErrorPage />} />
+
       </Routes>
       
     </div>
