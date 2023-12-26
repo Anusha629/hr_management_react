@@ -3,8 +3,14 @@ import "./Style.css";
 
 export default function Employees() {
   const [employees, setEmployees] = useState([]);
-  const [searchResult,setSearchResult]=useState([])
+  const [searchResult, setSearchResult] = useState([])
   const [employeeDetails, setEmployeeDetails] = useState({});
+  const [searchText, setSearchText] = useState('')
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
 
   const fetchUserData = async (empId) => {
     const response = await fetch(`http://localhost:5000/employees/${empId}`);
@@ -20,43 +26,56 @@ export default function Employees() {
     setEmployees(() => jsonData);
     console.log(employees);
   };
-  useEffect(() => {
-    fetchData(); }, []);
+  
   return (
     <div className="main-container">
-    <div className="employees-list-details-container">
-      <div className="employee-list-container">
-          <h3 className="">List of Employees</h3>
-          <SearchEmployee handleSearch={handleSearch} />
-          {
-            searchResult.length > 0 ? searchResult.map((data, index) => (
-              <p role="button" onClick={() => {fetchUserData(data.id);}} key={index}>
-                {index + 1}. {data.fname + " " + data.lname}{" "}
-              </p>
-            )) : employees.map((data, index) => (
-              <p role="button" onClick={() => {fetchUserData(data.id); }} key={index} >
-                {index + 1}. {data.fname + " " + data.lname}{" "}
+      <div className="employees-list-details-container">
+        <div className="employee-list-container">
+          <h3>List of Employees</h3>
+          <SearchEmployee handleSearch={handleSearch} setSearchText={setSearchText} />
+          {searchResult.length > 0 ? (
+            searchResult.map((data, index) => (
+              <p
+                role="button"
+                onClick={() => {
+                  fetchUserData(data.id);
+                }}
+                key={index}
+              >
+                {index + 1}. {data.fname} {data.lname}
               </p>
             ))
-          }
-      
+          ) : !searchText ? (
+            employees.map((data, index) => (
+              <p
+                role="button"
+                onClick={() => {
+                  fetchUserData(data.id);
+                }}
+                key={index}
+              >
+                {index + 1}. {data.fname} {data.lname}
+              </p>
+            ))
+          ) : (
+            <p>No employee found</p>
+          )}
+        </div>
+        <div className="employee-details-container">
+          {Object.keys(employeeDetails).length > 0 && (
+            <EmployeeDetails data={employeeDetails} fetchUserData={fetchUserData} />
+          )}
+        </div>
       </div>
-      <div className="employee-details-container ">
-        {Object.keys(employeeDetails).length > 0 && (
-          <EmployeeDetails
-            data={employeeDetails}
-            fetchUserData={fetchUserData} />
-        )}
-      </div>
-      </div>
-      </div>
+    </div>
   );
+  
   function handleSearch(searchText) {
     const filteredData = employees.filter((data) => (data.fname + " " + data.lname).toLowerCase().includes(searchText.toLowerCase()))
     setSearchResult(filteredData)
-    console.log(searchResult) 
-}
-}
+    console.log(searchResult)
+  }
+};
 
 const EmployeeDetails = ({ data, fetchUserData }) => {
   const [leaveDetails, setLeaveDetails] = useState({});
@@ -78,7 +97,6 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
       }, 2500);
       return;
     }
-  
     try {
       const response = await fetch(`http://localhost:5000/leaves/${data.id}`, {
         method: "POST",
@@ -87,10 +105,19 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
         console.log("Server response:", response);
         
       console.log(leaveDetails)
-      if (response.status === 200) {
+      if (response.ok) {
+        await fetchUserData(data.id)
+
         const jsonData = await response.json();
         setSuccessMessage(jsonData.message);
-        console.log(jsonData);
+
+      } else {
+        const errorData = await response.json()
+        console.log(errorData.error)
+        setErrorMessage(errorData.error);
+        
+        }
+
         setTimeout(() => {
          setSuccessMessage();
          }, 2500);
@@ -99,15 +126,8 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
           leave_date: "", leave_reason: "",
         });
        
-        await fetchUserData(data.id);
       }
-      else {
-        setErrorMessage("Leave entry already exists for this date.");
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 2500);
-      }
-    }
+      
     catch (e) {
       console.log(e);
     }
@@ -184,28 +204,31 @@ const EmployeeDetails = ({ data, fetchUserData }) => {
     </div>
   );
 };
+function SearchEmployee({ handleSearch, setSearchText }) {
+  const handleChange = (e) => {
+    setSearchText(e.target.value);
+    handleSearch(e.target.value);
+  };
 
-function SearchEmployee({ handleSearch }) {
- 
   return (
     <div className="search-container">
-      <input type="search" placeholder="Search Employees" onChange={(e)=> handleSearch(e.target.value)} />
-          <svg width="25px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 
-      18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247
-      15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748
-       16.0247L16.0247 15.8748Z" fill="#0d2e4e8a"></path></svg>
-      
-  </div>
-  ) 
-};
-
-
-
-
-
-
-
-
-
+      <input
+        type="search"
+        placeholder="Search Employees"
+        onChange={handleChange}
+      />
+      <svg
+        width="25px"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z"
+          fill="#0d2e4e8a"
+        ></path>
+      </svg>
+    </div>
+  );
+}
 
 
