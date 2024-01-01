@@ -18,13 +18,6 @@ padding-left:80px;
 margin-top:30px; 
 }
 
-.parent{
-width:90%;
-margin-inline:auto;
-display:table;
-margin-top:30px;
-}
-
 .employee-list-container:-webkit-scrollbar{
 display: none;
 }
